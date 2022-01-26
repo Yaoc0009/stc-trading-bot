@@ -1,15 +1,11 @@
 import json, ccxt, os
 from flask import Flask, request
 app = Flask(__name__)
-from config import CREDENTIALS, WEBHOOK_PASSPHRASE
 
-FTX_API_KEY = CREDENTIALS['api_key']
-FTX_SECRET = CREDENTIALS['secret']
-SUBACCOUNT_NAME = CREDENTIALS['account']
-# FTX_API_KEY = os.environ.get('FTX_API_KEY')
-# FTX_SECRET = os.environ.get('FTX_SECRET')
-# SUBACCOUNT_NAME = os.environ.get('SUBACCOUNT_NAME')
-# WEBHOOK_PASSPHRASE = os.environ.get('WEBHOOK_PASSPHRASE')
+FTX_API_KEY = os.environ.get('FTX_API_KEY')
+FTX_SECRET = os.environ.get('FTX_SECRET')
+SUBACCOUNT_NAME = os.environ.get('SUBACCOUNT_NAME')
+WEBHOOK_PASSPHRASE = os.environ.get('WEBHOOK_PASSPHRASE')
 
 # get the ftx exchange instance
 exchange_id = 'ftx'
