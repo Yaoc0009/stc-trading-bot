@@ -68,7 +68,7 @@ def webhook():
     leverage = 3
     lever_response = exchange.set_leverage(leverage)
     order_response = None
-    
+
     # entry position
     if order_id in ["Long", "Short"]:
         usd_balance = exchange.fetch_balance()['USD']['free']
@@ -86,6 +86,11 @@ def webhook():
                     if amount != 0:
                         order_response = order(symbol, side, amount, params={'reduce_only': True})
                         break
+                    else:
+                        return {
+                            "code": "error",
+                            "message": "no positions to close"
+                        }
 
     if order_response:
         return {
