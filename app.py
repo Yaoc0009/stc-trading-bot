@@ -67,7 +67,8 @@ def webhook():
     order_id = data['strategy']['order_id']
     leverage = 3
     lever_response = exchange.set_leverage(leverage)
-
+    order_response = None
+    
     # entry position
     if order_id in ["Long", "Short"]:
         usd_balance = exchange.fetch_balance()['USD']['free']
