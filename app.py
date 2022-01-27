@@ -66,11 +66,12 @@ def webhook():
     side = data['strategy']['order_action']
     order_id = data['strategy']['order_id']
     leverage = 3
-    lever_response = exchange.set_leverage(leverage)
+    lever_response = None
     order_response = None
 
     # entry position
     if order_id in ["Long", "Short"]:
+        lever_response = exchange.set_leverage(leverage)
         usd_balance = exchange.fetch_balance()['USD']['free']
         curr_price = exchange.fetch_ticker(ccxt_symbol)['last']
         amount = usd_balance*leverage / curr_price
