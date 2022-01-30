@@ -69,8 +69,20 @@ def webhook():
     lever_response = None
     order_response = None
 
+    open_amount = 0
+    # check if there are open positions
+    if exchange.has['fetchPositions']:
+        positions = exchange.fetch_positions()
+        for position in positions:
+            if position['symbol'] == symbol:
+                open_amount = position['contracts']
+    print("{} - {} contracts".format(symbol, open_amount))
+    
     # entry position
     if order_id in ["Long", "Short"]:
+        # close opposing positions first
+        if (open_amount < 0 and order_id == 'Long') or (open_amount > 0 and order_id == 'Short'):
+            order_response = order(symbol, side, open_amount, params={'reduce_only': True})
         lever_response = exchange.set_leverage(leverage)
         usd_balance = exchange.fetch_balance()['USD']['free']
         curr_price = exchange.fetch_ticker(ccxt_symbol)['last']
@@ -79,19 +91,13 @@ def webhook():
 
     # close position
     elif order_id in ["Close entry(s) order Short", "Close entry(s) order Long"]:
-        if exchange.has['fetchPositions']:
-            positions = exchange.fetch_positions()
-            for position in positions:
-                if position['symbol'] == symbol:
-                    amount = position['contracts']
-                    if amount != 0:
-                        order_response = order(symbol, side, amount, params={'reduce_only': True})
-                        break
-                    else:
-                        return {
-                            "code": "error",
-                            "message": "no positions to close"
-                        }
+        if open_amount != 0:
+            order_response = order(symbol, side, open_amount, params={'reduce_only': True})
+        else:
+            return {
+                "code": "error",
+                "message": "no positions to close"
+            }
 
     if order_response:
         return {
