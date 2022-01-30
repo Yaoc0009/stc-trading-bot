@@ -65,7 +65,7 @@ def webhook():
 
     side = data['strategy']['order_action']
     order_id = data['strategy']['order_id']
-    leverage = 3
+    leverage = 5
     lever_response = None
     order_response = None
 
@@ -86,7 +86,7 @@ def webhook():
         lever_response = exchange.set_leverage(leverage)
         usd_balance = exchange.fetch_balance()['USD']['free']
         curr_price = exchange.fetch_ticker(ccxt_symbol)['last']
-        amount = usd_balance*leverage / curr_price
+        amount = usd_balance*3 / curr_price
         order_response = order(symbol, side, amount)
 
     # close position
