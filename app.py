@@ -76,23 +76,31 @@ def webhook():
         for position in positions:
             if position['symbol'] == symbol:
                 open_amount = position['contracts']
-    print("{} - {} contracts".format(symbol, open_amount))
+    print("Current position: {} - {} contracts".format(symbol, open_amount))
     
     # entry position
     if order_id in ["Long", "Short"]:
         # close opposing positions first
         if (open_amount < 0 and order_id == 'Long') or (open_amount > 0 and order_id == 'Short'):
             order_response = order(symbol, side, open_amount, params={'reduce_only': True})
+            print("Closing positions... {} - {} {} contracts".format(symbol, side, open_amount))
+            while True:
+                positions = exchange.fetch_positions()
+                open_amount = [position for position in positions if position['symbol'] == symbol][0]['contracts']
+                if open_amount == 0:
+                    break
         lever_response = exchange.set_leverage(leverage)
         usd_balance = exchange.fetch_balance()['USD']['free']
         curr_price = exchange.fetch_ticker(ccxt_symbol)['last']
         amount = usd_balance*3 / curr_price
         order_response = order(symbol, side, amount)
+        print("Placing order... {} - {} {} contracts".format(symbol, side, amount))
 
-    # close position
+    # exit position
     elif order_id in ["Close entry(s) order Short", "Close entry(s) order Long"]:
         if open_amount != 0:
             order_response = order(symbol, side, open_amount, params={'reduce_only': True})
+            print("Closing positions... {} - {} {} contracts".format(symbol, side, open_amount))
         else:
             return {
                 "code": "error",
