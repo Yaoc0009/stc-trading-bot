@@ -63,9 +63,10 @@ def webhook():
 
     side = data['strategy']['order_action']
     amount = data['strategy']['order_contracts']
+    price = data['strategy']['order_price']
     leverage = 5
     lever_response = exchange.set_leverage(leverage)
-    order_response = order(symbol, side, amount)
+    order_response = order(symbol, side, amount, type='limit', price=price)
     print("Placing order... {} - {} {} contracts".format(symbol, side, amount))
     print(order_response)
     print(lever_response)
